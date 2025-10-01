@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { applyActionCode } from "firebase/auth";
-import { auth } from "./firebase"; // adjust path if needed
+import { auth } from "../firebase"; // adjust path if needed
 
 export default function Verify() {
   const [status, setStatus] = useState("Verifying...");
