@@ -1,28 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { getAuth, applyActionCode } from "firebase/auth";
+import { applyActionCode } from "firebase/auth";
+import { auth } from "./firebase"; // adjust path if needed
 
 export default function Verify() {
   const [status, setStatus] = useState("Verifying...");
-  const auth = getAuth();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const oobCode = urlParams.get("oobCode");
+    const params = new URLSearchParams(window.location.search);
+    let oobCode = params.get("oobCode");
 
-    if (oobCode) {
-      applyActionCode(auth, oobCode)
-        .then(() => {
-          console.log("✅ Email verified!");
-          setStatus("✅ Your email has been verified successfully.");
-        })
-        .catch((err) => {
-          console.error("❌ Verification error:", err);
-          setStatus("❌ Verification failed. The link may have expired or is invalid.");
-        });
-    } else {
-      setStatus("❌ No verification code found in the URL.");
+    // fallback if wrapped in link= param
+    if (!oobCode) {
+      const wrapped = params.get("link");
+      if (wrapped) {
+        try {
+          const url = new URL(wrapped);
+          oobCode = url.searchParams.get("oobCode");
+        } catch (e) {
+          console.error("Parse error:", e);
+        }
+      }
     }
-  }, [auth]);
+
+    if (!oobCode) {
+      setStatus("❌ No verification code found.");
+      return;
+    }
+
+    applyActionCode(auth, oobCode)
+      .then(() => {
+        console.log("✅ Verified");
+        setStatus("✅ Your email has been verified successfully.");
+      })
+      .catch((err) => {
+        console.error("Verification error:", err);
+        setStatus("❌ Verification failed. Link may be invalid or expired.");
+      });
+  }, []);
 
   return (
     <div style={styles.container}>
@@ -33,7 +47,6 @@ export default function Verify() {
     </div>
   );
 }
-
 const styles = {
   container: {
     display: "flex",
@@ -44,8 +57,9 @@ const styles = {
     textAlign: "center",
   },
   logo: {
-    width: 400,
+    width: 240,
     height: "auto",
     marginTop: 20,
   },
-};
+}
+
