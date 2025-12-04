@@ -12,7 +12,7 @@ function App() {
           path="/"
           element={
             <div style={styles.container}>
-              <h1>Welcome to NicMeUp</h1>
+              <h1>Welcome to NeighborUp!</h1>
               <p>This site hosts our Privacy Policy and Verification pages.</p>
               <img src="/Logo5.png" alt="NicMeUp Logo" style={styles.logo} />
             </div>

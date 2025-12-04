@@ -42,7 +42,7 @@ export default function Verify() {
     <div style={styles.container}>
       <h1>Email Verification</h1>
       <p>{status}</p>
-      <p>You may now return to the NicMeUp app.</p>
+      <p>You may now return to the NeighborUp app.</p>
       <img src="/Logo5.png" alt="NicMeUp Logo" style={styles.logo} />
     </div>
   );
