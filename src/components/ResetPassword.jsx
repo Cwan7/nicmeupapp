@@ -3,7 +3,7 @@ import { confirmPasswordReset } from "firebase/auth";
 import { auth } from "../firebase";
 
 const passwordRegex =
-  /^(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=\[\]{};:'",.<>/?\\|`~]).{8,}$/;
+  /^(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};:'",.<>/?\\|`~]).{8,}$/;
 
 export default function ResetPassword({ oobCode }) {
   const [password, setPassword] = useState("");
