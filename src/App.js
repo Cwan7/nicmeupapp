@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Privacy from "./components/Privacy";
 import Verify from "./components/Verify";
+import Reset from "./components/Reset";
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/verify"element={<Verify />}/>
+        <Route path="/reset" element={<Reset />} />
         <Route
           path="/"
           element={
