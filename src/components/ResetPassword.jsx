@@ -12,6 +12,7 @@ export default function ResetPassword({ oobCode }) {
       setStatus("Password must be at least 6 characters.");
       return;
     }
+
     if (password !== confirm) {
       setStatus("Passwords do not match.");
       return;
@@ -21,28 +22,40 @@ export default function ResetPassword({ oobCode }) {
       await confirmPasswordReset(auth, oobCode, password);
       setStatus("✅ Password reset successful. You can now sign in.");
     } catch (err) {
-      setStatus("❌ Reset failed. Link may be expired.");
+      console.error(err);
+      setStatus("❌ Reset failed. Link may be expired or already used.");
     }
   };
 
   return (
     <div style={styles.container}>
-        <h1 style={styles.title}>Reset Password</h1>
-        <input
-            type="password"
-            placeholder="New password"
-            style={styles.input}
-        />
-        <input
-            type="password"
-            placeholder="Confirm password"
-            style={styles.input}
-        />
-        <button style={styles.button}>Reset Password</button>
-        <p style={styles.status}>Status message here</p>
+      <h1 style={styles.title}>Reset Password</h1>
+
+      <input
+        type="password"
+        placeholder="New password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={styles.input}
+      />
+
+      <input
+        type="password"
+        placeholder="Confirm password"
+        value={confirm}
+        onChange={(e) => setConfirm(e.target.value)}
+        style={styles.input}
+      />
+
+      <button onClick={handleReset} style={styles.button}>
+        Reset Password
+      </button>
+
+      {status && <p style={styles.status}>{status}</p>}
     </div>
   );
 }
+
 const styles = {
   container: {
     display: "flex",
