@@ -2,14 +2,22 @@ import { useState } from "react";
 import { confirmPasswordReset } from "firebase/auth";
 import { auth } from "../firebase";
 
+const passwordRegex =
+  /^(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=\[\]{};:'",.<>/?\\|`~]).{8,}$/;
+
 export default function ResetPassword({ oobCode }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleReset = async () => {
-    if (password.length < 6) {
-      setStatus("Password must be at least 6 characters.");
+    setStatus("");
+
+    if (!passwordRegex.test(password)) {
+      setStatus(
+        "Password must be at least 8 characters and include a number and a special character."
+      );
       return;
     }
 
@@ -19,17 +27,21 @@ export default function ResetPassword({ oobCode }) {
     }
 
     try {
+      setLoading(true);
       await confirmPasswordReset(auth, oobCode, password);
       setStatus("✅ Password reset successful. You can now sign in.");
     } catch (err) {
       console.error(err);
       setStatus("❌ Reset failed. Link may be expired or already used.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Reset Password</h1>
+      <h1 style={styles.heading}>NeighborUp</h1>
+      <h2 style={styles.title}>Reset Password</h2>
 
       <input
         type="password"
@@ -37,6 +49,7 @@ export default function ResetPassword({ oobCode }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         style={styles.input}
+        disabled={loading}
       />
 
       <input
@@ -45,16 +58,34 @@ export default function ResetPassword({ oobCode }) {
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
         style={styles.input}
+        disabled={loading}
       />
 
-      <button onClick={handleReset} style={styles.button}>
-        Reset Password
+      <button
+        onClick={handleReset}
+        style={{
+          ...styles.button,
+          opacity: loading ? 0.6 : 1,
+          pointerEvents: loading ? "none" : "auto",
+        }}
+      >
+        {loading ? "Resetting..." : "Reset Password"}
       </button>
 
-      {status && <p style={styles.status}>{status}</p>}
+      {status && (
+        <p
+          style={{
+            ...styles.status,
+            color: status.startsWith("✅") ? "green" : "#c00",
+          }}
+        >
+          {status}
+        </p>
+      )}
     </div>
   );
 }
+
 
 const styles = {
   container: {
@@ -68,11 +99,14 @@ const styles = {
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
     backgroundColor: "#ffffff",
   },
-
   title: {
     fontSize: "24px",
     fontWeight: 600,
-    marginBottom: "20px",
+    marginBottom: "10px",
+  },
+  heading: {
+    marginBottom: "0px",
+    fontSize: "32px",
   },
 
   input: {
